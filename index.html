@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barotrauma — Damage & Resolution Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg2: #111923;
+    --bg3: #1a2332;
+    --accent: #00e5ff;
+    --accent-dim: #00e5ff33;
+    --warn: #ff6b35;
+    --warn-dim: #ff6b3522;
+    --danger: #ff3547;
+    --danger-dim: #ff354722;
+    --heal: #4cff91;
+    --heal-dim: #4cff9122;
+    --text: #c8d6e5;
+    --text-dim: #5a6e82;
+    --border: #1e2d3d;
+    --yellow: #ffd93d;
+    --yellow-dim: #ffd93d22;
+    --purple: #b57bff;
+    --purple-dim: #b57bff22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+  }
+
+  /* ===== STICKY NAV ===== */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,20,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+    backdrop-filter: blur(12px);
+  }
+
+  .sticky-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .nav-top-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .nav-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 0 0 20px var(--accent-dim);
+  }
+
+  .search-box {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.32rem 0.6rem 0.32rem 1.7rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box input::placeholder { color: var(--text-dim); }
+  .search-box input:focus { border-color: var(--accent); }
+
+  .search-box::before {
+    content: '⌕';
+    position: absolute;
+    left: 0.55rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+
+  .toc-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .toc-sep {
+    width: 1px;
+    height: 14px;
+    background: var(--border);
+    margin: 0 0.1rem;
+  }
+
+  .toc a {
+    display: inline-block;
+    font-size: 0.66rem;
+    font-weight: 400;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .toc a.t-damage { background: var(--danger-dim); color: var(--danger); }
+  .toc a.t-damage:hover { border-color: var(--danger); }
+  .toc a.t-bleed { background: var(--warn-dim); color: var(--warn); }
+  .toc a.t-bleed:hover { border-color: var(--warn); }
+  .toc a.t-burn { background: var(--yellow-dim); color: var(--yellow); }
+  .toc a.t-burn:hover { border-color: var(--yellow); }
+  .toc a.t-misc { background: var(--purple-dim); color: var(--purple); }
+  .toc a.t-misc:hover { border-color: var(--purple); }
+  .toc a.t-sub { background: var(--accent-dim); color: var(--accent); }
+  .toc a.t-sub:hover { border-color: var(--accent); }
+  .toc a.t-heal { background: var(--heal-dim); color: var(--heal); }
+  .toc a.t-heal:hover { border-color: var(--heal); }
+
+  .toc a.active { border-color: currentColor; font-weight: 600; }
+
+  /* ===== HEADER ===== */
+  header {
+    text-align: center;
+    padding: 1.5rem 0 1.2rem;
+  }
+
+  header h1 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-shadow: 0 0 30px var(--accent-dim);
+  }
+
+  header p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.85rem;
+    padding: 0.5rem 0.9rem;
+    border-left: 3px solid var(--accent);
+    background: linear-gradient(90deg, var(--accent-dim), transparent);
+  }
+
+  .st-sub { border-left-color: var(--warn) !important; background: linear-gradient(90deg, var(--warn-dim), transparent) !important; }
+  .st-misc { border-left-color: var(--purple) !important; background: linear-gradient(90deg, var(--purple-dim), transparent) !important; }
+  .st-craft { border-left-color: var(--heal) !important; background: linear-gradient(90deg, var(--heal-dim), transparent) !important; }
+  .st-supply { border-left-color: var(--yellow) !important; background: linear-gradient(90deg, var(--yellow-dim), transparent) !important; }
+  .st-triage { border-left-color: var(--danger) !important; background: linear-gradient(90deg, var(--danger-dim), transparent) !important; }
+
+  .section-gap { margin-top: 2.2rem; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0.65rem;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .card:hover { border-color: #ffffff22; }
+  .card.highlight { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-dim); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    user-select: none;
+    background: var(--bg3);
+  }
+
+  .card-header .icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .icon-damage { background: var(--danger-dim); color: var(--danger); }
+  .icon-bleed { background: var(--warn-dim); color: var(--warn); }
+  .icon-burn { background: var(--yellow-dim); color: var(--yellow); }
+  .icon-heal { background: var(--heal-dim); color: var(--heal); }
+  .icon-misc { background: var(--purple-dim); color: var(--purple); }
+  .icon-sub { background: var(--accent-dim); color: var(--accent); }
+
+  .card-header h3 { font-weight: 600; font-size: 0.85rem; flex: 1; }
+
+  .card-header .toggle {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+  }
+
+  .card.open .toggle { transform: rotate(90deg); }
+
+  .card-body {
+    display: none;
+    padding: 0.8rem 0.9rem 0.9rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .card.open .card-body { display: block; }
+  .card.hidden { display: none; }
+
+  .cause { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.55rem; font-style: italic; }
+
+  .steps { list-style: none; counter-reset: step; }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 0.45rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.66rem;
+    padding: 0.08rem 0.38rem;
+    border-radius: 3px;
+    vertical-align: middle;
+    letter-spacing: 0.02em;
+  }
+
+  .tag-item { background: var(--heal-dim); color: var(--heal); }
+  .tag-tool { background: var(--accent-dim); color: var(--accent); }
+  .tag-warn { background: var(--danger-dim); color: var(--danger); }
+  .tag-skill { background: var(--yellow-dim); color: var(--yellow); }
+  .tag-mat { background: var(--purple-dim); color: var(--purple); }
+
+  .tip {
+    margin-top: 0.6rem;
+    padding: 0.45rem 0.7rem;
+    background: var(--bg);
+    border-left: 2px solid var(--yellow);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.76rem;
+    color: var(--yellow);
+  }
+
+  /* ===== TRIAGE FLOWCHART ===== */
+  .flowchart {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.8rem;
+  }
+
+  .flow-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--danger);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.65rem;
+  }
+
+  .flow-step {
+    padding: 0.35rem 0.55rem;
+    background: var(--bg3);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin-bottom: 0.35rem;
+    border-left: 2px solid var(--accent);
+    padding-left: 0.55rem;
+  }
+
+  .flow-branch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  .flow-yes { border-left: 2px solid var(--heal); padding-left: 0.5rem; }
+  .flow-no { border-left: 2px solid var(--danger); padding-left: 0.5rem; }
+
+  .flow-label { font-family: 'Share Tech Mono', monospace; font-size: 0.63rem; letter-spacing: 0.06em; margin-bottom: 0.1rem; }
+  .flow-label.yes { color: var(--heal); }
+  .flow-label.no { color: var(--danger); }
+
+  /* ===== PRIORITY BAR ===== */
+  .priority-bar {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+    padding: 0.45rem 0.7rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .priority-bar span:first-child {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-right: 0.15rem;
+  }
+
+  .pri { padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; }
+  .pri-1 { background: var(--danger-dim); color: var(--danger); }
+  .pri-2 { background: var(--warn-dim); color: var(--warn); }
+  .pri-3 { background: var(--yellow-dim); color: var(--yellow); }
+  .pri-4 { background: var(--heal-dim); color: var(--heal); }
+
+  /* ===== CRAFTING TABLE ===== */
+  .craft-grid { display: grid; gap: 0.35rem; }
+
+  .craft-row {
+    display: grid;
+    grid-template-columns: 130px 1fr auto;
+    gap: 0.45rem;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    background: var(--bg3);
+    border-radius: 4px;
+    font-size: 0.78rem;
+  }
+
+  .craft-item { font-weight: 600; color: var(--heal); font-size: 0.78rem; }
+  .craft-mats { color: var(--text); font-size: 0.76rem; }
+  .craft-skill {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--yellow);
+    white-space: nowrap;
+  }
+
+  /* ===== SUPPLY CHECKLIST ===== */
+  .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--bg3);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+
+  .check-item.checked { opacity: 0.35; text-decoration: line-through; }
+
+  .check-box {
+    width: 15px;
+    height: 15px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.6rem;
+    color: var(--heal);
+    transition: border-color 0.2s;
+  }
+
+  .check-item.checked .check-box { border-color: var(--heal); }
+  .check-item.checked .check-box::after { content: '✓'; }
+
+  .check-cat {
+    grid-column: 1 / -1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    padding-top: 0.35rem;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  footer {
+    margin-top: 2.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .card-header { padding: 0.55rem 0.7rem; }
+    .card-body { padding: 0.65rem; }
+    .craft-row { grid-template-columns: 105px 1fr; }
+    .craft-skill { grid-column: 1 / -1; }
+    .checklist { grid-template-columns: 1fr; }
+    .flow-branch { grid-template-columns: 1fr; }
+    .nav-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY NAV ===== -->
+<nav class="sticky-nav">
+  <div class="sticky-inner">
+    <div class="nav-top-row">
+      <span class="nav-title">⚓ BAROTRAUMA</span>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search… e.g. husk, hull breach, morphine" oninput="filterCards()">
+      </div>
+    </div>
+    <div class="toc-row toc">
+      <a class="t-damage" onclick="jumpTo('triage')">Triage</a>
+      <div class="toc-sep"></div>
+      <a class="t-damage" onclick="jumpTo('internal')">Internal</a>
+      <a class="t-bleed" onclick="jumpTo('bleeding')">Bleed</a>
+      <a class="t-bleed" onclick="jumpTo('bloodloss')">Blood Loss</a>
+      <a class="t-burn" onclick="jumpTo('burns')">Burns</a>
+      <a class="t-damage" onclick="jumpTo('oxygen')">O₂</a>
+      <a class="t-misc" onclick="jumpTo('husk')">Husk</a>
+      <a class="t-misc" onclick="jumpTo('opiate')">OD</a>
+      <a class="t-misc" onclick="jumpTo('psychosis')">Psycho</a>
+      <a class="t-damage" onclick="jumpTo('pressure')">Pressure</a>
+      <a class="t-misc" onclick="jumpTo('stun')">Stun</a>
+      <div class="toc-sep"></div>
+      <a class="t-sub" onclick="jumpTo('hull')">Hull</a>
+      <a class="t-sub" onclick="jumpTo('flooding')">Flood</a>
+      <a class="t-sub" onclick="jumpTo('fire')">Fire</a>
+      <a class="t-sub" onclick="jumpTo('electrical')">Elec</a>
+      <a class="t-sub" onclick="jumpTo('mechanical')">Mech</a>
+      <a class="t-sub" onclick="jumpTo('reactor')">Reactor</a>
+      <div class="toc-sep"></div>
+      <a class="t-heal" onclick="jumpTo('crafting')">Craft</a>
+      <a class="t-burn" onclick="jumpTo('supply')">Supply</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<header>
+  <h1>⚓ Damage & Resolution Guide</h1>
+  <p>If you see this damage → follow these steps</p>
+</header>
+
+<!-- ======================== TRIAGE ======================== -->
+
+<div class="section-title st-triage">🚨 Emergency Triage — Unconscious Patient</div>
+
+<div class="flowchart" id="triage" data-search="triage emergency unconscious patient down cpr first aid stabilize revive">
+  <div class="flow-title">▸ PATIENT IS DOWN — WHAT DO I DO?</div>
+
+  <div class="flow-step"><strong>1.</strong> Submerged / no oxygen?</div>
+  <div class="flow-branch">
+    <div class="flow-yes"><div class="flow-label yes">YES →</div>Move to dry, oxygenated area. <strong>Diving Suit</strong> if pressurized.</div>
+    <div class="flow-no"><div class="flow-label no">NO →</div>Continue to step 2.</div>
+  </div>
+
+  <div class="flow-step"><strong>2.</strong> Active <strong>bleeding</strong>? (unstable — gets worse)</div>
+  <div class="flow-branch">
+    <div class="flow-yes"><div class="flow-label yes">BLEEDING →</div><strong>Bandage</strong> or <strong>Plastiseal</strong> immediately. Priority #1.</div>
+    <div class="flow-no"><div class="flow-label no">NO BLEED →</div>Continue to step 3.</div>
+  </div>
+
+  <div class="flow-step"><strong>3.</strong> <strong>Internal damage</strong> / lacerations?</div>
+  <div class="flow-branch">
+    <div class="flow-yes"><div class="flow-label yes">YES →</div><strong>Opium</strong> (mild) or <strong>Morphine</strong> (severe). Should restore consciousness.</div>
+    <div class="flow-no"><div class="flow-label no">MINIMAL →</div>Continue to step 4.</div>
+  </div>
+
+  <div class="flow-step"><strong>4.</strong> <strong>Oxygen Low</strong> primary affliction?</div>
+  <div class="flow-branch">
+    <div class="flow-yes"><div class="flow-label yes">MEDIC 25+ →</div>Perform <strong>CPR</strong> while they have air access.</div>
+    <div class="flow-no"><div class="flow-label no">NOT MEDIC →</div><strong>Stabilozine</strong>, <strong>Liquid Oxygenite</strong>, or <strong>Deusizine</strong>. Bad CPR = harm.</div>
+  </div>
+
+  <div class="flow-step"><strong>5.</strong> Severe <strong>blood loss</strong>?</div>
+  <div class="flow-branch">
+    <div class="flow-yes"><div class="flow-label yes">YES →</div><strong>Saline</strong> or <strong>Blood Pack</strong>. Ensure bleeding is stopped first.</div>
+    <div class="flow-no"><div class="flow-label no">MINOR →</div>Leave it — minor blood loss recovers on its own.</div>
+  </div>
+
+  <div class="flow-step" style="border-left-color: var(--yellow);"><strong>Last resort:</strong> Inject <strong>Anabolic Steroids</strong> (+200% max vitality) to buy time. <strong>Adrenaline</strong> forces brief consciousness.</div>
+</div>
+
+
+<!-- ======================== CREW MEDICAL ======================== -->
+
+<div class="section-title">🩺 Crew Medical — Afflictions & Treatment</div>
+
+<div class="priority-bar">
+  <span>TRIAGE:</span>
+  <span class="pri pri-1">Bleeding</span>
+  <span class="pri pri-2">O₂ Low</span>
+  <span class="pri pri-3">Internal</span>
+  <span class="pri pri-4">Burns / Other</span>
+</div>
+
+<div class="card" id="internal" data-search="internal damage lacerations bite wounds gunshot wounds blunt opium morphine fentanyl opiates">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-damage">⬤</div>
+    <h3>Internal Damage / Lacerations / Bite & Gunshot Wounds</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: blunt impacts, falls, melee, creatures, bullets, sharp objects</div>
+    <ol class="steps">
+      <li>Check severity via <span class="tag tag-tool">Health Scanner HUD</span>.</li>
+      <li>If also bleeding → treat bleeding <strong>first</strong>.</li>
+      <li><span class="tag tag-item">Opium</span> for moderate (heals damage + minor burns).</li>
+      <li><span class="tag tag-item">Morphine</span> serious, <span class="tag tag-item">Fentanyl</span> critical.</li>
+      <li>Watch for overdose — have <span class="tag tag-item">Naloxone</span> ready.</li>
+    </ol>
+    <div class="tip">💡 20% damage + 20% burns = one Opium covers both. Don't waste bandages.</div>
+  </div>
+</div>
+
+<div class="card" id="bleeding" data-search="bleeding bandage plastiseal antibiotic glue lacerations cuts wound">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-bleed">⬤</div>
+    <h3>Bleeding</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: sharp weapons, bullets, creature bites</div>
+    <ol class="steps">
+      <li><strong>Unstable</strong> — worsens over time, causes blood loss. Prioritize.</li>
+      <li><span class="tag tag-item">Bandage</span> minor, <span class="tag tag-item">Plastiseal</span> heavy bleeding.</li>
+      <li><span class="tag tag-item">Antibiotic Glue</span> also works (8 uses/tube).</li>
+      <li>Minor bleeding heals on its own — don't waste supplies on trivial cuts.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="bloodloss" data-search="blood loss saline blood pack alien blood">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-bleed">⬤</div>
+    <h3>Blood Loss</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: untreated bleeding</div>
+    <ol class="steps">
+      <li><strong>Stop the bleed first</strong> — blood loss climbs while bleeding is active.</li>
+      <li><span class="tag tag-item">Saline</span> (−50/dose), <span class="tag tag-item">Blood Pack</span> (stronger), <span class="tag tag-item">Alien Blood</span> (substitute).</li>
+      <li>~10% blood loss? Leave it — they'll recover.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="burns" data-search="burns fire antibiotic glue bandage plastiseal welding thermal">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-burn">⬤</div>
+    <h3>Burns</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: fire, welding, overvolted junction boxes, thermal artifacts</div>
+    <ol class="steps">
+      <li><span class="tag tag-item">Antibiotic Glue</span> — best burn treatment.</li>
+      <li><span class="tag tag-item">Bandage</span> / <span class="tag tag-item">Plastiseal</span> also work.</li>
+      <li>Opiates heal burns as secondary — covers damage + burns together.</li>
+      <li>Lower priority than bleeding or internal. Heals slowly on its own.</li>
+    </ol>
+    <div class="tip">💡 Hardmode: untreated burns → Infected Wounds. Treat promptly.</div>
+  </div>
+</div>
+
+<div class="card" id="oxygen" data-search="oxygen low suffocation cpr stabilozine liquid oxygenite drowning unconscious breathing">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-damage">⬤</div>
+    <h3>Oxygen Low / Suffocation</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: unconsciousness, heavy opiates, no O₂, submerged without mask</div>
+    <ol class="steps">
+      <li>Ensure patient has breathable air first.</li>
+      <li><span class="tag tag-item">CPR</span> with <span class="tag tag-skill">Medical 25+</span>. Bad CPR = harm.</li>
+      <li>Not medic? <span class="tag tag-item">Stabilozine</span> / <span class="tag tag-item">Liquid Oxygenite</span> / <span class="tag tag-item">Deusizine</span>.</li>
+      <li>Often: treat underlying injuries → consciousness → they breathe on their own.</li>
+    </ol>
+    <div class="tip">💡 Unconscious = stop breathing. Getting vitality above 0 is usually the best "O₂ treatment."</div>
+  </div>
+</div>
+
+<div class="card" id="husk" data-search="husk infection calyxanide antibiotics broad spectrum zombie crawler bite">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-misc">⬤</div>
+    <h3>Husk Infection</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: husk / infected crawler bites, husk egg injection</div>
+    <ol class="steps">
+      <li>Detect early — <span class="tag tag-tool">Health Scanner HUD</span> spots Stage 2.</li>
+      <li>Early: <span class="tag tag-item">Broad-Spectrum Antibiotics</span> (multiple doses may be needed).</li>
+      <li>Best: <span class="tag tag-item">Calyxanide</span> — all stages. 1–4 doses.</li>
+      <li><span class="tag tag-warn">LATE STAGE</span> — Antibiotics cause damage. Calyxanide only.</li>
+      <li>Can't cure? Lethal intervention — turned husks infect the crew.</li>
+    </ol>
+    <div class="tip">💡 Last resort: Sufforin/Cyanide kills infection, but you must treat the poisoning immediately.</div>
+  </div>
+</div>
+
+<div class="card" id="opiate" data-search="opiate overdose addiction naloxone stabilozine fentanyl morphine">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-misc">⬤</div>
+    <h3>Opiate Overdose / Addiction</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: repeated Opium / Morphine / Fentanyl use</div>
+    <ol class="steps">
+      <li><span class="tag tag-item">Naloxone</span> — only cure for overdose + addiction.</li>
+      <li><span class="tag tag-item">Stabilozine</span> helps in a pinch.</li>
+      <li>Use weakest effective opiate. Don't Fentanyl minor injuries.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="psychosis" data-search="psychosis deliriumine ruins ethanol pipe tobacco hallucination">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-misc">⬤</div>
+    <h3>Psychosis</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: Deliriumine poisoning, exploring ruins</div>
+    <ol class="steps">
+      <li>Prevent: <span class="tag tag-item">Ethanol</span> / <span class="tag tag-item">Pipe Tobacco</span> → Psychosis Resistance.</li>
+      <li>Fades once source removed. Keep affected crew away from critical systems.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="pressure" data-search="pressure barotrauma diving suit crush implosion depth">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-damage">⬤</div>
+    <h3>Pressure Damage (Barotrauma)</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: outside without diving suit, flooded pressurized room</div>
+    <ol class="steps">
+      <li><span class="tag tag-warn">NO MEDICATION CURE</span> — must fix the environment.</li>
+      <li>Get patient to pressurized dry area. <span class="tag tag-item">Diving Suit</span> outside (mask ≠ pressure protection).</li>
+      <li>Fix hull breach or evacuate. Treat secondary injuries once safe.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="stun" data-search="stun paralysis adrenaline hyperzine methamphetamine baton chloral">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-misc">⬤</div>
+    <h3>Stun / Paralysis</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: stun baton/gun, chloral hydrate, creatures</div>
+    <ol class="steps">
+      <li>Wears off on its own (30s max).</li>
+      <li><span class="tag tag-item">Adrenaline</span> — instant removal, brief forced consciousness.</li>
+      <li><span class="tag tag-item">Hyperzine</span> / <span class="tag tag-item">Methamphetamine</span> shorten duration.</li>
+    </ol>
+  </div>
+</div>
+
+
+<!-- ======================== SUBMARINE ======================== -->
+
+<div class="section-gap"></div>
+<div class="section-title st-sub">🔧 Submarine — Repair & Maintenance</div>
+
+<div class="priority-bar">
+  <span>REPAIR:</span>
+  <span class="pri pri-1">Hull Breach</span>
+  <span class="pri pri-2">Flooding</span>
+  <span class="pri pri-3">Fire</span>
+  <span class="pri pri-4">Elec / Mech</span>
+</div>
+
+<div class="card" id="hull" data-search="hull breach welding tool repair armor leak water weld">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Hull Breach</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: creatures, explosions, collisions</div>
+    <ol class="steps">
+      <li><span class="tag tag-tool">Diving Suit</span> if heavily flooded.</li>
+      <li>Locate: <span class="tag tag-tool">Status Monitor</span> (orange/red) or listen for water.</li>
+      <li><span class="tag tag-tool">Welding Tool</span> (needs fuel) — right-click aim, left-click weld.</li>
+      <li>Weld <strong>inside first</strong>, then exterior armor.</li>
+      <li>Activate <span class="tag tag-tool">Pumps</span> to drain. Check corners/thruster areas for hidden leaks.</li>
+    </ol>
+    <div class="tip">💡 Can't find it? Go outside, weld entire hull with a scooter. Higher Mechanical = faster.</div>
+  </div>
+</div>
+
+<div class="card" id="flooding" data-search="flooding pump ballast flora doors hatches water drain">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Flooding (No Visible Breach)</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: open exterior doors, pump malfunction, ballast flora</div>
+    <ol class="steps">
+      <li><span class="tag tag-tool">Status Monitor</span> — trace the source.</li>
+      <li>Seal all exterior doors/hatches.</li>
+      <li>Check pumps — reverse "pump in." Destroy Ballast Flora if present.</li>
+      <li>Pump from bottom up — water flows downward.</li>
+    </ol>
+    <div class="tip">💡 Even partial flooding affects ascent — ballast tanks can't drain properly.</div>
+  </div>
+</div>
+
+<div class="card" id="fire" data-search="fire extinguisher junction box overvolt reactor overheat thermal explosion">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Fire</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: overvolted junction boxes, reactor, thermal artifacts, incendiaries</div>
+    <ol class="steps">
+      <li><span class="tag tag-tool">Fire Extinguisher</span> immediately.</li>
+      <li><span class="tag tag-warn">DANGER</span> — fire eats O₂ fast. Mask up if needed.</li>
+      <li>Move explosives / O₂ tanks — fire detonates them.</li>
+      <li>Fix overvolted junction box or reduce reactor output. Treat crew burns after.</li>
+    </ol>
+    <div class="tip">💡 Overvolted junctions = #1 fire cause. Keep reactor matched to demand.</div>
+  </div>
+</div>
+
+<div class="card" id="electrical" data-search="electrical junction box screwdriver wiring wire power circuit voltage">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Electrical Damage (Junction Boxes, Wiring)</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: overvoltage, flooding, deterioration, explosions</div>
+    <ol class="steps">
+      <li><span class="tag tag-tool">Screwdriver</span> → interact → hold repair.</li>
+      <li>Wiring gone? <span class="tag tag-item">Wire</span> + Screwdriver → wiring interface → drag into power slot.</li>
+      <li>Quick-fix: connect to any nearby powered device (even a light).</li>
+      <li>Drain room first — submerged devices take continuous damage.</li>
+    </ol>
+    <div class="tip">💡 Low skill rewiring = electrocution risk. Engineers repair dramatically faster.</div>
+  </div>
+</div>
+
+<div class="card" id="mechanical" data-search="mechanical wrench pump engine fabricator deterioration condition repair">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Mechanical Damage (Pumps, Engines, Fabricators)</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: normal use, flooding, explosions, wear</div>
+    <ol class="steps">
+      <li><span class="tag tag-tool">Wrench</span> → interact → hold repair.</li>
+      <li>Fabricator degrades through use — repair after crafting.</li>
+      <li>0% condition = inoperable. Don't let things deteriorate.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="reactor" data-search="reactor meltdown overheat fuel rod power battery nuclear engineer">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Reactor Overheat / Meltdown</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="cause">Caused by: excessive output, unmanaged fuel rods</div>
+    <ol class="steps">
+      <li>Reduce power — match to demand.</li>
+      <li>Critical? <strong>Shut down reactor</strong>. Battery backup buys time.</li>
+      <li>Reduce battery charge rate / disable non-essentials.</li>
+      <li>Replace spent fuel rods.</li>
+      <li><span class="tag tag-warn">MELTDOWN = GAME OVER</span></li>
+    </ol>
+    <div class="tip">💡 Auto-control works but is less efficient than manual management.</div>
+  </div>
+</div>
+
+
+<!-- ======================== CRAFTING ======================== -->
+
+<div class="section-gap"></div>
+<div class="section-title st-craft" id="crafting">🧪 Crafting Recipes — Medical Fabricator</div>
+
+<div class="card open" id="craft-essential" data-search="crafting recipe bandage plastiseal opium morphine fentanyl saline blood pack naloxone calyxanide deusizine antibiotic glue stabilozine fabricator ingredients fiber elastin poppy ethanol sodium chlorine">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-heal">⬤</div>
+    <h3>Essential Medicine Recipes</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="craft-grid">
+      <div class="craft-row"><span class="craft-item">Bandage</span><span class="craft-mats"><span class="tag tag-mat">Organic Fiber</span></span><span class="craft-skill">MED 0</span></div>
+      <div class="craft-row"><span class="craft-item">Plastiseal ×2</span><span class="craft-mats"><span class="tag tag-mat">Bandage</span> + <span class="tag tag-mat">Elastin</span></span><span class="craft-skill">MED 16</span></div>
+      <div class="craft-row"><span class="craft-item">Opium</span><span class="craft-mats"><span class="tag tag-mat">Aquatic Poppy</span> (deconstruct)</span><span class="craft-skill">MED 0</span></div>
+      <div class="craft-row"><span class="craft-item">Morphine</span><span class="craft-mats"><span class="tag tag-mat">Opium ×2</span></span><span class="craft-skill">MED 18</span></div>
+      <div class="craft-row"><span class="craft-item">Fentanyl</span><span class="craft-mats"><span class="tag tag-mat">Morphine</span> + <span class="tag tag-mat">Adrenaline</span> + <span class="tag tag-mat">Ethanol</span></span><span class="craft-skill">MED 50</span></div>
+      <div class="craft-row"><span class="craft-item">Antibiotic Glue</span><span class="craft-mats"><span class="tag tag-mat">Stabilozine</span> + <span class="tag tag-mat">Antibiotics</span> + <span class="tag tag-mat">Elastin</span></span><span class="craft-skill">MED 48</span></div>
+      <div class="craft-row"><span class="craft-item">Saline</span><span class="craft-mats"><span class="tag tag-mat">Sodium</span> + <span class="tag tag-mat">Chlorine</span></span><span class="craft-skill">MED 5</span></div>
+      <div class="craft-row"><span class="craft-item">Blood Pack</span><span class="craft-mats"><span class="tag tag-mat">Alien Blood</span> + <span class="tag tag-mat">Saline</span> + <span class="tag tag-mat">Stabilozine</span></span><span class="craft-skill">MED 31</span></div>
+      <div class="craft-row"><span class="craft-item">Naloxone</span><span class="craft-mats"><span class="tag tag-mat">Morphine</span> + <span class="tag tag-mat">Stabilozine</span></span><span class="craft-skill">MED 23</span></div>
+      <div class="craft-row"><span class="craft-item">Calyxanide</span><span class="craft-mats"><span class="tag tag-mat">Calyx Eggs</span> + <span class="tag tag-mat">Antibiotics</span> + <span class="tag tag-mat">Stabilozine</span></span><span class="craft-skill">MED 22</span></div>
+      <div class="craft-row"><span class="craft-item">Deusizine</span><span class="craft-mats"><span class="tag tag-mat">Antibiotic Glue</span> + <span class="tag tag-mat">Fentanyl</span> + <span class="tag tag-mat">Liq. Oxygenite</span></span><span class="craft-skill">MED 70</span></div>
+    </div>
+    <div class="tip">💡 Raw sources: Fiber Plant → Organic Fiber. Elastin Plant → Elastin. Aquatic Poppy → Opium. Slime Bacteria → Antibiotics. Sea Yeast Mushroom → Ethanol.</div>
+  </div>
+</div>
+
+
+<!-- ======================== SUPPLY CHECKLIST ======================== -->
+
+<div class="section-gap"></div>
+<div class="section-title st-supply" id="supply">📋 Pre-Mission Supply Checklist</div>
+
+<div class="card open" data-search="supply checklist stock mission preparation buy outpost essentials shopping list">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-burn">⬤</div>
+    <h3>What to Stock Before Departing</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <div class="checklist">
+      <div class="check-cat">🩺 MEDICAL — CRITICAL</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Bandages ×6–10</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Plastiseal ×4–6</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Opium ×4–6</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Morphine ×2–4</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Saline ×4–6</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Naloxone ×2–3</div>
+
+      <div class="check-cat">🩺 MEDICAL — RECOMMENDED</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Antibiotic Glue ×1–2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Calyxanide ×2–3</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Broad-Spec Antibiotics ×2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Blood Pack ×2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Stabilozine ×2–3</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Liquid Oxygenite ×2</div>
+
+      <div class="check-cat">🔧 REPAIR & ENGINEERING</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Welding Tool ×2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Welding Fuel ×4–6 cans</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Screwdriver ×2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Wrench ×2</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Spare Wires ×3–4</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Fuel Rods (full load)</div>
+
+      <div class="check-cat">🛡️ SURVIVAL & COMBAT</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Diving Suits (1 per crew min)</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Oxygen Tanks (spares)</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Ammo (full boxes near turrets)</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Fire Extinguisher ×2</div>
+
+      <div class="check-cat">🧪 RAW CRAFTING MATERIALS</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Fiber Plant / Organic Fiber</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Elastin Plant / Elastin</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Aquatic Poppy</div>
+      <div class="check-item" onclick="this.classList.toggle('checked')"><div class="check-box"></div>Sodium + Chlorine</div>
+    </div>
+    <div class="tip">💡 Campaign: afflictions heal between rounds. Don't over-invest — focus on keeping people alive, not fully healed.</div>
+  </div>
+</div>
+
+
+<!-- ======================== QUICK REFERENCE ======================== -->
+
+<div class="section-gap"></div>
+<div class="section-title st-misc">📦 Quick Reference</div>
+
+<div class="card" id="tools-ref" data-search="tools welding screwdriver wrench crowbar plasma cutter repair what fixes">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-sub">⬤</div>
+    <h3>Tool → What It Fixes</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <ol class="steps">
+      <li><span class="tag tag-tool">Welding Tool</span> → Hull breaches. Welds doors shut.</li>
+      <li><span class="tag tag-tool">Screwdriver</span> → All electrical (junction boxes, wiring).</li>
+      <li><span class="tag tag-tool">Wrench</span> → All mechanical (pumps, engines, fabricators).</li>
+      <li><span class="tag tag-tool">Crowbar</span> → Force doors, floor vents.</li>
+      <li><span class="tag tag-tool">Plasma Cutter</span> → Cut welded doors, salvage.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="meds-ref" data-search="medicine treatment bandage plastiseal opium morphine fentanyl saline naloxone calyxanide deusizine adrenaline stabilozine antibiotic glue blood pack what treats">
+  <div class="card-header" onclick="toggle(this)">
+    <div class="icon icon-heal">⬤</div>
+    <h3>Medicine → What It Treats</h3>
+    <span class="toggle">▶</span>
+  </div>
+  <div class="card-body">
+    <ol class="steps">
+      <li><span class="tag tag-item">Bandage / Plastiseal</span> → Bleeding + Burns</li>
+      <li><span class="tag tag-item">Antibiotic Glue</span> → Burns + Bleeding + Infected Wounds (8 uses)</li>
+      <li><span class="tag tag-item">Opium</span> → Internal + burns (mild)</li>
+      <li><span class="tag tag-item">Morphine</span> → Internal + burns (moderate)</li>
+      <li><span class="tag tag-item">Fentanyl</span> → Internal + burns (critical) <span class="tag tag-warn">HIGH OD RISK</span></li>
+      <li><span class="tag tag-item">Saline / Blood Pack / Alien Blood</span> → Blood loss</li>
+      <li><span class="tag tag-item">Naloxone</span> → Opiate overdose + addiction</li>
+      <li><span class="tag tag-item">Calyxanide</span> → Husk (all stages)</li>
+      <li><span class="tag tag-item">Broad-Spec Antibiotics</span> → Husk (early) + Infected Wounds</li>
+      <li><span class="tag tag-item">Stabilozine / Liq. Oxygenite</span> → O₂ Low (non-medic CPR alt)</li>
+      <li><span class="tag tag-item">Deusizine</span> → Endgame multi (damage, blood loss, stun)</li>
+      <li><span class="tag tag-item">Adrenaline</span> → Instant stun removal, brief consciousness</li>
+    </ol>
+  </div>
+</div>
+
+<div class="no-results" id="noResults">No matches found. Try a different search term.</div>
+
+<footer>
+  Barotrauma Quick Reference — Game content © Undertow Games / FakeFish / Daedalic Entertainment
+</footer>
+
+</div>
+
+<script>
+function toggle(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function jumpTo(id) {
+  document.getElementById('searchInput').value = '';
+  filterCards();
+
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  // Close all cards, open target
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('open', 'highlight'));
+  if (el.classList.contains('card')) {
+    el.classList.add('open', 'highlight');
+  } else {
+    el.classList.add('highlight');
+  }
+
+  // Highlight active TOC
+  document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.toc a').forEach(a => {
+    if (a.getAttribute('onclick') && a.getAttribute('onclick').includes("'" + id + "'")) {
+      a.classList.add('active');
+    }
+  });
+
+  // Scroll with offset
+  setTimeout(() => {
+    const navH = document.querySelector('.sticky-nav').offsetHeight;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH - 10;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }, 30);
+
+  setTimeout(() => el.classList.remove('highlight'), 2200);
+}
+
+function filterCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  const extras = document.querySelectorAll('.section-title, .priority-bar, .flowchart, .section-gap');
+  const noRes = document.getElementById('noResults');
+  let vis = 0;
+
+  if (!q) {
+    cards.forEach(c => { c.classList.remove('hidden'); c.classList.remove('open'); });
+    extras.forEach(e => e.style.display = '');
+    noRes.style.display = 'none';
+    // Re-open crafting + supply by default
+    const ce = document.getElementById('craft-essential');
+    if (ce) ce.classList.add('open');
+    return;
+  }
+
+  cards.forEach(card => {
+    const txt = ((card.getAttribute('data-search') || '') + ' ' + card.textContent).toLowerCase();
+    if (txt.includes(q)) {
+      card.classList.remove('hidden');
+      card.classList.add('open');
+      vis++;
+    } else {
+      card.classList.add('hidden');
+      card.classList.remove('open');
+    }
+  });
+
+  // Also check flowchart
+  const fc = document.querySelector('.flowchart');
+  if (fc) {
+    const fcTxt = ((fc.getAttribute('data-search') || '') + ' ' + fc.textContent).toLowerCase();
+    fc.style.display = fcTxt.includes(q) ? '' : 'none';
+  }
+
+  extras.forEach(e => e.style.display = q ? 'none' : '');
+  noRes.style.display = vis === 0 ? 'block' : 'none';
+}
+</script>
+
+</body>
+</html>
